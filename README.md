@@ -1,5 +1,3 @@
-# restpython
-Python Implementation of Reference Electrode Standardization Technique
 # REST_python
 Python Implementation of Reference Electrode Standardization Technique
 
