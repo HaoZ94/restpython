@@ -10,9 +10,9 @@ For more see http://www.neuro.uestc.edu.cn/rest/
 
 __author__    = "Hao Zhu"
 __copyright__ = "Copyright 2019"
-__date__      = '2019/04/09'
+__date__      = '2019/05/28'
 __license__   = "MIT"
-__version__   = "1.0.1"
+__version__   = "1.0.3"
 __email__     = "hz808@nyu.edu"
 
 from .rest_ref import REST_re_reference

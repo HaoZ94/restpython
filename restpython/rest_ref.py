@@ -41,13 +41,14 @@ Main function of Reference Electrode Standardization Technique
 
 __author__    = "Hao Zhu"
 __copyright__ = "Copyright 2019"
-__date__      = '2019/04/09'
+__date__      = '2019/05/28'
 __license__   = "MIT"
-__version__   = "1.0.1"
+__version__   = "1.0.3"
 __email__     = "hz808@nyu.edu"
 
 # Import Needed Modules
 import numpy as np 
+from numpy import matlib
 import mne
 import pickle
 
@@ -64,32 +65,38 @@ def REST_re_reference(eeg_raw_data,montage='standard_1005',mode="average",refere
 
 	G_dic = pickle.load(open(f'Lead_Field/{montage}_LeadField.p','rb')) #load leadfiled dictionary
 
-	G = np.array([G_dic[ch] for ch in eeg_raw_data.info['ch_names']]) #get corresponding Lead Field Matirx 
+	G = np.array([G_dic[ch] for ch in eeg_raw_data.info['ch_names']]) #get corresponding LeadField Matrix 
 
 	if mode == 'average':
 		raw = eeg_raw_data.set_eeg_reference(ref_channels='average', projection=True)
 		raw.apply_proj()
 
-		l = np.ones((G.shape[0],1))
-		gar = G.mean(axis=0).reshape(1,3000)
-		Gar = G - np.dot(l,gar) #get leadfiled matrix at averaged reference
-		Gar_plus = np.linalg.pinv(Gar,rcond=0.05) #Moore-Penrose generalized inverses
-		Rar = np.dot(G,Gar_plus)
+		raw_data = raw.get_data()
 
-		REST_data = np.dot(Rar,raw.get_data()) #re-reference
+		gar = G.mean(axis=0).reshape(1,3000)
+		Gar = G - matlib.repmat(gar,G.shape[0],1) #get leadfiled matrix at averaged reference
+		Gar_plus = np.linalg.pinv(Gar,rcond=0.05) #Moore-Penrose generalized inverses
+		Rar = np.matmul(G,Gar_plus)
+
+		REST_data = np.matmul(Rar,raw_data) #re-reference
+
+		REST = raw_data + matlib.repmat(REST_data.mean(axis=0).reshape(1,REST_data.shape[1]),G.shape[0],1)
 
 	else:
 		raw = eeg_raw_data
 
-		l = np.ones((G.shape[0],1))
+		raw_data = raw.get_data()
+
 		ge = G[raw.info['ch_names'].index(reference_ch)].reshape(1,3000)
-		Ge = G - np.dot(l,ge) #get leadfiled matrix at a point reference
+		Ge = G - matlib.repmat(ge,G.shape[0],1) #get leadfiled matrix at a point reference
 		Ge_plus = np.linalg.pinv(Ge,rcond=0.05) #Moore-Penrose generalized inverses
-		Re = np.dot(G,Ge_plus)
+		Re = np.matmul(G,Ge_plus)
 
-		REST_data = np.dot(Re,raw.get_data()) #re-reference
+		REST_data = np.matmul(Re,raw_data) #re-reference
 
-	raw_rest = mne.io.RawArray(REST_data, raw.info, first_samp=0, verbose=None) #reconstruct raw instance after REST 
+		REST = raw_data + matlib.repmat(REST_data.mean(axis=0).reshape(1,REST_data.shape[1]),G.shape[0],1)
 
-	return raw_rest 
+	raw_rest = mne.io.RawArray(REST, raw.info, first_samp=0, verbose=None) #reconstruct raw instance after REST
+
+	return raw_rest
     
