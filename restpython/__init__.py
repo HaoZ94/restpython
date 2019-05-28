@@ -12,7 +12,7 @@ __author__    = "Hao Zhu"
 __copyright__ = "Copyright 2019"
 __date__      = '2019/05/28'
 __license__   = "MIT"
-__version__   = "1.1.1"
+__version__   = "1.1.2"
 __email__     = "hz808@nyu.edu"
 
 from .rest_ref import REST_re_reference
