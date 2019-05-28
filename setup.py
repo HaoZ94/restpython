@@ -12,7 +12,7 @@ setup(
   author = 'Hao Zhu',                   # Type in your name
   author_email = 'hz808@nyu.edu',      # Type in your E-Mail
   url = 'https://github.com/Haophdmd/restpython',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/Haophdmd/restpython/archive/1.0.3.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/Haophdmd/restpython/archive/1.1.0.tar.gz',    # I explain this later on
   keywords = ['EEG', 'REST', 'RE-REFERENCE','PYTHON','TOOLBAOX'],   # Keywords that define your package best
   install_requires=['numpy','mne'],          # I get to this in a second
 
